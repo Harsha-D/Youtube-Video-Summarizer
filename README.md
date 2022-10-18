@@ -3,4 +3,5 @@ Chrome Extension that gives a summary of any YouTube video with English subtitle
 # Contact 
 Sashank Desu - sashank.desu@gmail.com
 LinkedIn: https://www.linkedin.com/in/sashankdesu/
+
 Project link: https://github.com/Harsha-D/Youtube-Summarizer
