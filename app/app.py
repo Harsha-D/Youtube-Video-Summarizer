@@ -19,9 +19,7 @@ def mainpage():
 
 def Transcript_To_Text(transcript):
     formatter = JSONFormatter()
-    json_formatted = formatter.format_transcript(transcript)
-    with open('transcript_file.json', 'w', encoding='utf-8') as json_file:
-        json_file.write(json_formatted)   
+    json_formatted = formatter.format_transcript(transcript) 
     speech_text = json.loads(json_formatted)
     speech_text_string = ""
     for i in speech_text: 
