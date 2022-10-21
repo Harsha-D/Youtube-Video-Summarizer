@@ -1,9 +1,9 @@
 .button1 {
-  pointer-events: auto;
+        pointer-events: auto;
 	cursor: pointer;
 	border: none;
 	padding: 0.5rem 3rem;
-	margin: 0;
+	margin: 5px;
 	font-family: inherit;
 	position: relative;
 	display: inline-block;
@@ -59,15 +59,16 @@ h2 {
 #summarypara {
   font-family: 'Josefin Sans', sans-serif;
   font-size: 1rem;
-  margin-top: 15px;
+  margin-top: 10px;
 }
 
 #summaryspan {
 	text-decoration: underline;
+	margin-bottom: 5px;
 }
 
 body {
   text-align: center;
-  width: 300px;
-  height: 300px;
+  width: 370px;
+  height: 370px;
 }
