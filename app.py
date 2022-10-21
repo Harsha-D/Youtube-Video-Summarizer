@@ -4,7 +4,6 @@ from transformers import T5ForConditionalGeneration, T5Tokenizer, pipeline
 import json
 from flask import Flask, jsonify, request, abort, Response  
 import flask as f
-import re
 from http import HTTPStatus
 
 app = Flask(__name__)
@@ -29,9 +28,9 @@ def Transcript_To_Text(transcript):
         speech_text_string += " "
     return speech_text_string
 
-def Text_Summary(script):
-    model = T5ForConditionalGeneration.from_pretrained("t5-large")
-    tokenizer = T5Tokenizer.from_pretrained("t5-large")
+def Text_Summary_Small(script):
+    model = T5ForConditionalGeneration.from_pretrained("t5-base")
+    tokenizer = T5Tokenizer.from_pretrained("t5-base")
     inputs = tokenizer.encode("summarize: " + script, return_tensors="pt", max_length=512,truncation=True)
     outputs = model.generate(  
     inputs, 
@@ -42,8 +41,22 @@ def Text_Summary(script):
     early_stopping=True)
     return tokenizer.decode(outputs[0])
 
-def Text_Summary_Improved(script):
+def Text_Summary_Medium(script):
     summarizer = pipeline('summarization', model="t5-base")
+    num_iters = int(len(script)/2000)
+    summarized_text = []
+    for i in range(0, num_iters + 1):
+        start = 0
+        start = i * 2000
+        end = (i + 1) * 2000
+        out = summarizer(script[start:end],max_length=20, min_length=5)
+        out = out[0]  
+        out = out['summary_text'] 
+        summarized_text.append(out)
+    return " ".join(summarized_text)
+    
+def Text_Summary_Large(script):
+    summarizer = pipeline('summarization',model="t5-base")
     num_iters = int(len(script)/1000)
     summarized_text = []
     for i in range(0, num_iters + 1):
@@ -60,19 +73,44 @@ def Text_Summary_Improved(script):
 def handle_exception(e):
     return f'Bad Request! Error: {HTTPStatus(e.code)}, {HTTPStatus(e.code).phrase}'
 
-@app.route('/api/summarize', methods=['GET'])
-def api():
+@app.route('/api1/summarize1', methods=['GET'])
+def api1():
     url_yt = request.args.get('youtube_url', None)
     if url_yt==None:
         abort(404)
-    x = re.search("watch\?v\=\w+", url_yt)  
-    v_id = ""
-    for i in range(len(x.group())):  
-        if i>7:
-            v_id += x.group()[i]  
+    x = url_yt.split("v=")
+    v_id = str(x[1])
     transcript = YouTubeTranscriptApi.get_transcript(v_id)
     script = Transcript_To_Text(transcript)
-    resp = f.Response(Text_Summary_Improved(script))
+    resp = f.Response(Text_Summary_Small(script))
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    resp.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
+    resp.headers['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-CSRF-Token'
+    return resp
+@app.route('/api2/summarize2', methods=['GET'])
+def api2():
+    url_yt = request.args.get('youtube_url', None)
+    if url_yt==None:
+        abort(404)
+    x = url_yt.split("v=")
+    v_id = str(x[1])
+    transcript = YouTubeTranscriptApi.get_transcript(v_id)
+    script = Transcript_To_Text(transcript)
+    resp = f.Response(Text_Summary_Medium(script))
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    resp.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
+    resp.headers['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-CSRF-Token'
+    return resp
+@app.route('/api3/summarize3', methods=['GET'])
+def api3():
+    url_yt = request.args.get('youtube_url', None)
+    if url_yt==None:
+        abort(404)
+    x = url_yt.split("v=")
+    v_id = str(x[1])
+    transcript = YouTubeTranscriptApi.get_transcript(v_id)
+    script = Transcript_To_Text(transcript)
+    resp = f.Response(Text_Summary_Large(script))
     resp.headers['Access-Control-Allow-Origin'] = '*'
     resp.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
     resp.headers['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-CSRF-Token'
