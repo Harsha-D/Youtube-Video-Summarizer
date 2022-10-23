@@ -7,8 +7,11 @@ function generateSummary(url_yt,x) {
             document.getElementById("summarized-text").innerHTML =
             this.responseText;
             document.getElementById("plswait").innerHTML = "";
+            button1.style.display = 'initial';
+            button2.style.display = 'initial';
+            button3.style.display = 'initial';
        }
-    };
+    };  
     if(x==1){
         req.open("GET", `http://localhost:5000/api1/summarize1?youtube_url=${url_yt}`, true);
         req.send();
