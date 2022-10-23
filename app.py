@@ -34,8 +34,8 @@ def Text_Summary_Small(script):
     inputs = tokenizer.encode("summarize: " + script, return_tensors="pt", max_length=512,truncation=True)
     outputs = model.generate(  
     inputs, 
-    max_length=150, 
-    min_length=40, 
+    max_length=300,
+    min_length= 100,
     length_penalty=2.0, 
     num_beams=4, 
     early_stopping=True)
@@ -49,7 +49,7 @@ def Text_Summary_Medium(script):
         start = 0
         start = i * 2000
         end = (i + 1) * 2000
-        out = summarizer(script[start:end],max_length=20, min_length=5)
+        out = summarizer(script[start:end])
         out = out[0]  
         out = out['summary_text'] 
         summarized_text.append(out)
@@ -63,7 +63,7 @@ def Text_Summary_Large(script):
         start = 0
         start = i * 1000
         end = (i + 1) * 1000
-        out = summarizer(script[start:end],max_length=20, min_length=10)
+        out = summarizer(script[start:end])
         out = out[0]  
         out = out['summary_text'] 
         summarized_text.append(out)
