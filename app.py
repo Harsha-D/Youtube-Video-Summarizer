@@ -28,7 +28,7 @@ def Transcript_To_Text(transcript):
         speech_text_string += " "
     return speech_text_string
 
-def Text_Summary_Small_Tokenizer(script):
+def Text_Summary_Small_T5(script):
     model = T5ForConditionalGeneration.from_pretrained("t5-base")
     tokenizer = T5Tokenizer.from_pretrained("t5-base")
     inputs = tokenizer.encode("summarize: " + script, return_tensors="pt", max_length=512,truncation=True)
