@@ -42,7 +42,7 @@ def Text_Summary_Small_Tokenizer(script):
     return tokenizer.decode(outputs[0])
 
 def Text_Summary_Small(script):
-    summarizer = pipeline('summarization', model="t5-base", truncation=True)
+    summarizer = pipeline('summarization', truncation=True)
     num_iters = int(len(script)/4000)
     summarized_text = []
     for i in range(0, num_iters + 1):
@@ -56,7 +56,7 @@ def Text_Summary_Small(script):
     return " ".join(summarized_text)
 
 def Text_Summary_Medium(script):
-    summarizer = pipeline('summarization', model="t5-base", truncation=True)
+    summarizer = pipeline('summarization', truncation=True)
     num_iters = int(len(script)/2000)
     summarized_text = []
     for i in range(0, num_iters + 1):
@@ -70,7 +70,7 @@ def Text_Summary_Medium(script):
     return " ".join(summarized_text)
     
 def Text_Summary_Large(script):
-    summarizer = pipeline('summarization',model="t5-base", truncation=True)
+    summarizer = pipeline('summarization', truncation=True)
     num_iters = int(len(script)/1000)
     summarized_text = []
     for i in range(0, num_iters + 1):
