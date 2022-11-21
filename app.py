@@ -28,7 +28,7 @@ def Transcript_To_Text(transcript):
         speech_text_string += " "
     return speech_text_string
 
-def Text_Summary_Small_T5(script):
+def Text_Summary_T5_Tokenizer(script):
     model = T5ForConditionalGeneration.from_pretrained("t5-base")
     tokenizer = T5Tokenizer.from_pretrained("t5-base")
     inputs = tokenizer.encode("summarize: " + script, return_tensors="pt", max_length=512,truncation=True)
@@ -40,43 +40,15 @@ def Text_Summary_Small_T5(script):
     num_beams=4, 
     early_stopping=True)
     return tokenizer.decode(outputs[0])
-
-def Text_Summary_Small(script):
-    summarizer = pipeline('summarization', truncation=True)
-    num_iters = int(len(script)/4000)
-    summarized_text = []
-    for i in range(0, num_iters + 1):
-        start = 0
-        start = i * 4000
-        end = (i + 1) * 4000
-        out = summarizer(script[start:end])
-        out = out[0]  
-        out = out['summary_text'] 
-        summarized_text.append(out)
-    return " ".join(summarized_text)
-
-def Text_Summary_Medium(script):
-    summarizer = pipeline('summarization', truncation=True)
-    num_iters = int(len(script)/2000)
-    summarized_text = []
-    for i in range(0, num_iters + 1):
-        start = 0
-        start = i * 2000
-        end = (i + 1) * 2000
-        out = summarizer(script[start:end])
-        out = out[0]  
-        out = out['summary_text'] 
-        summarized_text.append(out)
-    return " ".join(summarized_text)
     
-def Text_Summary_Large(script):
-    summarizer = pipeline('summarization', truncation=True)
-    num_iters = int(len(script)/1000)
+def Text_Summary(script):
+    summarizer = pipeline('summarization', truncation=True, model="t5-base")
+    num_iters = int(len(script)/500)
     summarized_text = []
     for i in range(0, num_iters + 1):
         start = 0
-        start = i * 1000
-        end = (i + 1) * 1000
+        start = i * 500
+        end = (i + 1) * 500
         out = summarizer(script[start:end])
         out = out[0]  
         out = out['summary_text'] 
@@ -96,7 +68,7 @@ def api1():
     v_id = str(x[1])
     transcript = YouTubeTranscriptApi.get_transcript(v_id)
     script = Transcript_To_Text(transcript)
-    resp = f.Response(Text_Summary_Medium(script))
+    resp = f.Response(Text_Summary_T5_Tokenizer(script))
     resp.headers['Access-Control-Allow-Origin'] = '*'
     resp.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
     resp.headers['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-CSRF-Token'
@@ -111,7 +83,7 @@ def api2():
     v_id = str(x[1])
     transcript = YouTubeTranscriptApi.get_transcript(v_id)
     script = Transcript_To_Text(transcript)
-    resp = f.Response(Text_Summary_Large(script))
+    resp = f.Response(Text_Summary(script))
     resp.headers['Access-Control-Allow-Origin'] = '*'
     resp.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
     resp.headers['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-CSRF-Token'
