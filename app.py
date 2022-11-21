@@ -5,15 +5,14 @@ import json
 from flask import Flask, jsonify, request, abort, Response  
 import flask as f
 from http import HTTPStatus
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route('/')
 def mainpage():
     resp = f.Response("Hello there")
-    resp.headers['Access-Control-Allow-Origin'] = '*'
-    resp.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
-    resp.headers['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-CSRF-Token'
     return resp
 
 def Transcript_To_Text(transcript):
@@ -31,7 +30,7 @@ def Transcript_To_Text(transcript):
 def Text_Summary_T5_Tokenizer(script):
     model = T5ForConditionalGeneration.from_pretrained("t5-base")
     tokenizer = T5Tokenizer.from_pretrained("t5-base")
-    inputs = tokenizer.encode("summarize: " + script, return_tensors="pt", max_length=512,truncation=True)
+    inputs = tokenizer.encode("summarize: " + script, return_tensors="pt", max_length=512, truncation=True)
     outputs = model.generate(  
     inputs, 
     max_length=150,
@@ -42,20 +41,24 @@ def Text_Summary_T5_Tokenizer(script):
     return tokenizer.decode(outputs[0])
     
 def Text_Summary(script):
-    summarizer = pipeline('summarization', truncation=True, model="t5-base")
+    summarizer = pipeline('summarization', model="t5-base", truncation=True)
     num_iters = int(len(script)/500)
     summarized_text = []
     for i in range(0, num_iters + 1):
         start = 0
         start = i * 500
         end = (i + 1) * 500
-        out = summarizer(script[start:end])
+        out = summarizer(script[start:end],max_length=100)
         out = out[0]  
         out = out['summary_text'] 
         summarized_text.append(out)
     return " ".join(summarized_text)
 
 @app.errorhandler(404)
+def handle_exception(e):
+    return f'Bad Request! Error: {HTTPStatus(e.code)}, {HTTPStatus(e.code).phrase}'
+
+@app.errorhandler(500)
 def handle_exception(e):
     return f'Bad Request! Error: {HTTPStatus(e.code)}, {HTTPStatus(e.code).phrase}'
     
@@ -69,9 +72,6 @@ def api1():
     transcript = YouTubeTranscriptApi.get_transcript(v_id)
     script = Transcript_To_Text(transcript)
     resp = f.Response(Text_Summary_T5_Tokenizer(script))
-    resp.headers['Access-Control-Allow-Origin'] = '*'
-    resp.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
-    resp.headers['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-CSRF-Token'
     return resp
 
 @app.route('/api/summarize2', methods=['GET'])
@@ -84,9 +84,6 @@ def api2():
     transcript = YouTubeTranscriptApi.get_transcript(v_id)
     script = Transcript_To_Text(transcript)
     resp = f.Response(Text_Summary(script))
-    resp.headers['Access-Control-Allow-Origin'] = '*'
-    resp.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
-    resp.headers['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-CSRF-Token'
     return resp
 
 if __name__ == '__main__':
