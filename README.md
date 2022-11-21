@@ -1,5 +1,5 @@
 # About The Project
-Chrome Extension that gives a summarized transcript of any YouTube video with English subtitles. Implemented using T5 machine learning model (text-to-text) in python through flask. 
+Chrome Extension That Gives A Summarized Transcript Of Any YouTube Video with English Subtitles. Implemented Using T5 Machine Learning Model (Text-To-Text Transformer) In Python Through Flask. 
 # Contact 
 Sashank Desu - sashank.desu@gmail.com
 
