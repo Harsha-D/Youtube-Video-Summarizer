@@ -5,4 +5,4 @@ Sashank Desu - sashank.desu@gmail.com
 
 LinkedIn: https://www.linkedin.com/in/sashankdesu/
 
-Project link: https://github.com/Harsha-D/Youtube-Summarizer
+Project link: https://github.com/Harsha-D/Youtube-Video-Summarizer
