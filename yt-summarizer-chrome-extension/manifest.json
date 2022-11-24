@@ -4,7 +4,7 @@
     "description": "An extension to provide summarized transcript of a YouTube subtitle eligible video.",
     "version": "1.0",
     "permissions": ["activeTab","tabs"],
-    "browser_action": {
+    "action": {
         "default_popup": "popup.html",
         "default_icon": {
             "16": "images/youtubeimg.png",
@@ -24,8 +24,9 @@
         }
     ],
     "background": {
-      "scripts": ["background.js"],
-      "persistent": false
+      "service_worker": "background.js"
     },
-    "content_security_policy": "script-src 'self'; object-src 'self'"
+    "content_security_policy":{
+        "extension_pages": "script-src 'self'; object-src 'self'"
+    }
 }
