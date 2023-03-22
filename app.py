@@ -42,13 +42,15 @@ def Text_Summary_T5_Tokenizer(script):
     
 def Text_Summary(script):
     summarizer = pipeline('summarization', model="t5-base", truncation=True)
-    num_iters = int(len(script)/500)
+    num_iters = int(len(script.split())/500)
     summarized_text = []
+    print(num_iters)
     for i in range(0, num_iters + 1):
-        start = 0
         start = i * 500
         end = (i + 1) * 500
-        out = summarizer(script[start:end],max_length=100)
+        l = script.split()[start:end]
+        s = " ".join(l)
+        out = summarizer(s,min_length=100)
         out = out[0]  
         out = out['summary_text'] 
         summarized_text.append(out)
